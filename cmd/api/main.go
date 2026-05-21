@@ -5,6 +5,9 @@ import (
 	"log"
 	"rest-api-in-gin/internal/database"
 	"rest-api-in-gin/internal/env"
+
+	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type application struct {

@@ -18,4 +18,6 @@ cmd/migrate/migrate
 .idea/
 .vscode/
 .DS_Store
+
 data.db
+tmp/
