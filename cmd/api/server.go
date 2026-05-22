@@ -16,7 +16,6 @@ func (app *application) serve() error {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	log.Printf("Starting server on port %d\n", app.port)
-
+	log.Printf("Starting server on port %d", app.port)
 	return server.ListenAndServe()
 }
