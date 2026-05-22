@@ -48,9 +48,10 @@ A RESTful API built with Go and the Gin web framework.
    go run ./cmd/migrate
    ```
 5. Start the server:
-   ```bash
-   go run ./cmd/api
-   ```
+    ```bash
+    go run ./cmd/api
+    ```
+   The API will be available at `http://localhost:8080/api/v1`.
 
 ### Environment Variables
 

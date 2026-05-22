@@ -3,7 +3,7 @@
 ## Base URL
 
 ```
-http://localhost:8080
+http://localhost:8080/api/v1
 ```
 
 ## Authentication
@@ -39,84 +39,11 @@ All API responses follow this format:
 
 ## Endpoints
 
-### Users
-
-#### Register a New User
-```
-POST /api/users
-```
-
-**Request Body:**
-```json
-{
-  "email": "user@example.com",
-  "name": "John Doe",
-  "password": "securepassword123"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "email": "user@example.com",
-    "name": "John Doe"
-  }
-}
-```
-
-#### Login User
-```
-POST /api/auth/login
-```
-
-**Request Body:**
-```json
-{
-  "email": "user@example.com",
-  "password": "securepassword123"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-}
-```
-
-#### Get User Profile
-```
-GET /api/users/profile
-```
-
-**Headers:**
-```
-Authorization: Bearer <your_jwt_token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "email": "user@example.com",
-    "name": "John Doe"
-  }
-}
-```
-
 ### Events
 
 #### Create a New Event
 ```
-POST /api/events
+POST /api/v1/events
 ```
 
 **Headers:**
@@ -151,7 +78,7 @@ Authorization: Bearer <your_jwt_token>
 
 #### Get All Events
 ```
-GET /api/events
+GET /api/v1/events
 ```
 
 **Response:**
@@ -173,7 +100,7 @@ GET /api/events
 
 #### Get Event by ID
 ```
-GET /api/events/:id
+GET /api/v1/events/:id
 ```
 
 **Response:**
@@ -193,7 +120,7 @@ GET /api/events/:id
 
 #### Update Event
 ```
-PUT /api/events/:id
+PUT /api/v1/events/:id
 ```
 
 **Headers:**
@@ -228,7 +155,7 @@ Authorization: Bearer <your_jwt_token>
 
 #### Delete Event
 ```
-DELETE /api/events/:id
+DELETE /api/v1/events/:id
 ```
 
 **Headers:**
@@ -243,69 +170,6 @@ Authorization: Bearer <your_jwt_token>
   "data": {
     "message": "Event deleted successfully"
   }
-}
-```
-
-### Attendance
-
-#### Register for an Event
-```
-POST /api/events/:id/attend
-```
-
-**Headers:**
-```
-Authorization: Bearer <your_jwt_token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "userId": 1,
-    "eventId": 1
-  }
-}
-```
-
-#### Cancel Attendance
-```
-DELETE /api/events/:id/attend
-```
-
-**Headers:**
-```
-Authorization: Bearer <your_jwt_token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "message": "Attendance cancelled successfully"
-  }
-}
-```
-
-#### Get Event Attendees
-```
-GET /api/events/:id/attendees
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "userId": 1,
-      "eventId": 1
-    }
-  ]
 }
 ```
 
@@ -332,7 +196,7 @@ Endpoints that return lists support pagination:
 - `page`: Page number (default: 1)
 - `limit`: Items per page (default: 10)
 
-Example: `/api/events?page=2&limit=5`
+Example: `/api/v1/events?page=2&limit=5`
 
 ## HTTP Status Codes
 
@@ -347,4 +211,4 @@ Example: `/api/events?page=2&limit=5`
 | 409 | Conflict |
 | 422 | Unprocessable Entity |
 | 429 | Too Many Requests |
-| 500 | Internal Server Error |
+| 500 | Internal Server Error
