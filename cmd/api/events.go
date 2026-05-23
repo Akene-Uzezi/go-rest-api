@@ -8,11 +8,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func(app *application) getHome(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "The api is running fine"})
+}
+
 func (app *application) createEvent(c *gin.Context) {
 	var event database.Event
 
 	if err := c.ShouldBindJSON(&event); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	err := app.models.Events.insert(&event)
@@ -46,6 +51,7 @@ func (app *application) getEvent(c *gin.Context) {
 
 	if event == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Event Not found"})
+		return
 	}
 
 	if err != nil {
@@ -100,6 +106,7 @@ func (app *application) deleteEvent(c *gin.Context) {
 
 	if err := app.models.Events.Delete(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete event"})
+		return
 	}
 
 	c.JSON(http.StatusNoContent, nil)

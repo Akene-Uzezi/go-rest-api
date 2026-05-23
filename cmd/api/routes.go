@@ -8,9 +8,15 @@ import (
 
 func (app *application) routes() http.Handler {
 	g := gin.Default()
-	
+	g.RedirectTrailingSlash = true
+
+	g.GET("/ping", func (c *gin.Context) {
+		c.JSON(200, gin.H{"message": "PONG"})
+	})
+
 	v1 := g.Group("/api/v1")
 	{
+		v1.GET("/", app.getHome)
 		v1.POST("/events", app.createEvent)
 		v1.GET("/events", app.getAllEvents)
 		v1.GET("/events/:id", app.getEvent)
