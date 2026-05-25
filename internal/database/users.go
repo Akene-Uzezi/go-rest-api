@@ -23,5 +23,17 @@ func (m *UserModel) Insert(user *User, ctx context.Context) error {
 	
 	query := "INSERT INTO users (email, name, password) VALUES ($1, $2, $3) RETURNING id"
 
-	return  m.DB.QueryRowContext(ctx, query, user.Email, user.Password, user.Name).Scan(&user.Id)
+	return  m.DB.QueryRowContext(ctx, query, user.Email, user.Name, user.Password).Scan(&user.Id)
+}
+
+func (m *UserModel) Delete(id int, ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	query := "DELETE FROM users WHERE id = $1"
+	_, err := m.DB.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
