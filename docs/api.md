@@ -19,6 +19,7 @@ Authorization: Bearer <your_jwt_token>
 All API responses follow this format:
 
 ### Success Response
+
 ```json
 {
   "success": true,
@@ -27,6 +28,7 @@ All API responses follow this format:
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
@@ -39,29 +41,65 @@ All API responses follow this format:
 
 ## Endpoints
 
+### Authentication
+
+#### Register a New User
+
+```
+POST /api/v1/auth/register
+```
+
+**Request Body:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword123",
+  "name": "John Doe"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
 ### Events
 
 #### Create a New Event
+
 ```
 POST /api/v1/events
 ```
 
 **Headers:**
+
 ```
 Authorization: Bearer <your_jwt_token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Tech Conference 2026",
   "description": "Annual technology conference featuring latest innovations",
   "date": "2026-12-15",
-  "location": "Convention Center, New York"
+  "location": "Convention Center, New York",
+  "ownerId": 1
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -77,11 +115,13 @@ Authorization: Bearer <your_jwt_token>
 ```
 
 #### Get All Events
+
 ```
 GET /api/v1/events
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -99,11 +139,13 @@ GET /api/v1/events
 ```
 
 #### Get Event by ID
+
 ```
 GET /api/v1/events/:id
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -119,26 +161,31 @@ GET /api/v1/events/:id
 ```
 
 #### Update Event
+
 ```
 PUT /api/v1/events/:id
 ```
 
 **Headers:**
+
 ```
 Authorization: Bearer <your_jwt_token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Updated Event Name",
   "description": "Updated description",
   "date": "2026-12-20",
-  "location": "Updated Location"
+  "location": "Updated Location",
+  "ownerId": 1
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -154,16 +201,19 @@ Authorization: Bearer <your_jwt_token>
 ```
 
 #### Delete Event
+
 ```
 DELETE /api/v1/events/:id
 ```
 
 **Headers:**
+
 ```
 Authorization: Bearer <your_jwt_token>
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -173,26 +223,42 @@ Authorization: Bearer <your_jwt_token>
 }
 ```
 
+#### Health Check
+
+```
+GET /api/v1/
+```
+
+**Response:**
+
+```json
+{
+  "message": "The api is running fine"
+}
+```
+
 ## Error Codes
 
-| Code | Message | Description |
-|------|---------|-------------|
-| VALIDATION_ERROR | Validation failed | Request data failed validation |
-| AUTHENTICATION_ERROR | Authentication failed | Invalid or missing credentials |
-| AUTHORIZATION_ERROR | Authorization failed | Insufficient permissions |
-| NOT_FOUND | Resource not found | Requested resource doesn't exist |
-| INTERNAL_ERROR | Internal server error | Unexpected server error |
-| CONFLICT | Resource conflict | Resource already exists or conflicting state |
+| Code                 | Message               | Description                                  |
+| -------------------- | --------------------- | -------------------------------------------- |
+| VALIDATION_ERROR     | Validation failed     | Request data failed validation               |
+| AUTHENTICATION_ERROR | Authentication failed | Invalid or missing credentials               |
+| AUTHORIZATION_ERROR  | Authorization failed  | Insufficient permissions                     |
+| NOT_FOUND            | Resource not found    | Requested resource doesn't exist             |
+| INTERNAL_ERROR       | Internal server error | Unexpected server error                      |
+| CONFLICT             | Resource conflict     | Resource already exists or conflicting state |
 
 ## Rate Limiting
 
 API endpoints are subject to rate limiting:
+
 - 100 requests per minute per IP address
 - Exceeding limits returns HTTP 429 (Too Many Requests)
 
 ## Pagination
 
 Endpoints that return lists support pagination:
+
 - `page`: Page number (default: 1)
 - `limit`: Items per page (default: 10)
 
@@ -200,15 +266,15 @@ Example: `/api/v1/events?page=2&limit=5`
 
 ## HTTP Status Codes
 
-| Code | Description |
-|------|-------------|
-| 200 | OK |
-| 201 | Created |
-| 400 | Bad Request |
-| 401 | Unauthorized |
-| 403 | Forbidden |
-| 404 | Not Found |
-| 409 | Conflict |
-| 422 | Unprocessable Entity |
-| 429 | Too Many Requests |
-| 500 | Internal Server Error
+| Code | Description           |
+| ---- | --------------------- |
+| 200  | OK                    |
+| 201  | Created               |
+| 400  | Bad Request           |
+| 401  | Unauthorized          |
+| 403  | Forbidden             |
+| 404  | Not Found             |
+| 409  | Conflict              |
+| 422  | Unprocessable Entity  |
+| 429  | Too Many Requests     |
+| 500  | Internal Server Error |

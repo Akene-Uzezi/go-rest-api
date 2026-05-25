@@ -2,33 +2,21 @@
 
 ## Overview
 
-This REST API is built using Go and the Gin web framework. It follows a layered architecture separating concerns between different components.
+This REST API is built using Go and the Gin web framework. It follows a simplified layered architecture separating concerns between different components.
 
 ## Architecture Diagram
 
 ```
 ┌─────────────────┐    ┌──────────────┐    ┌────────────────┐
-│   HTTP Layer    │───▶│  Handlers    │───▶│   Use Cases    │
-│ (Gin Framework) │    │              │    │                │
+│   HTTP Layer    │───▶│  Handlers    │───▶│ Repository     │
+│ (Gin Framework) │    │              │    │   (DB Models)  │
 └─────────────────┘    └──────────────┘    └────────────────┘
-                                   │
-                                   ▼
-                          ┌────────────────┐
-                          │   Services     │
-                          │ (Business Logic)│
-                          └────────────────┘
-                                   │
-                                   ▼
-                          ┌────────────────┐
-                          │  Repositories  │
-                          │ (Data Access)  │
-                          └────────────────┘
-                                   │
-                                   ▼
-                          ┌────────────────┐
-                          │   Database     │
-                          │ (SQLite)       │
-                          └────────────────┘
+                                    │
+                                    ▼
+                           ┌────────────────┐
+                           │   Database     │
+                           │ (SQLite)       │
+                           └────────────────┘
 ```
 
 ## Component Details
@@ -41,10 +29,11 @@ This REST API is built using Go and the Gin web framework. It follows a layered 
   - `main.go`: Application initialization and server setup
   - `routes.go`: Route definitions
   - `server.go`: HTTP server configuration
+  - `auth.go`: Authentication handlers
+  - `events.go`: Event handlers
 
-### 2. Use Cases (`internal/database/`)
+### 2. Repository Layer (`internal/database/`)
 - Contains data models and database operations
-- Acts as repository layer for data access
 - Implements CRUD operations for entities
 - Located in `internal/database/`
   - `models.go`: Main models container
@@ -52,18 +41,13 @@ This REST API is built using Go and the Gin web framework. It follows a layered 
   - `events.go`: Event entity and operations
   - `attendes.go`: Attendee entity and operations
 
-### 3. Services
-- Business logic layer (currently integrated with database layer)
-- In a more complex implementation, this would be separate
-- Handles validation, business rules, and orchestrates repository calls
-
-### 4. Environment Configuration (`internal/env/`)
+### 3. Environment Configuration (`internal/env/`)
 - Handles loading and accessing environment variables
 - Provides helper functions for type-safe environment variable access
 - Located in `internal/env/`
   - `env.go`: Environment variable utility functions
 
-### 5. Database Migrations (`cmd/migrate/`)
+### 4. Database Migrations (`cmd/migrate/`)
 - Manages database schema versioning
 - Uses golang-migrate library
 - Located in `cmd/migrate/`
@@ -73,10 +57,10 @@ This REST API is built using Go and the Gin web framework. It follows a layered 
 ## Data Flow
 
 1. Client sends HTTP request to Gin router
-2. Router directs request to appropriate handler
+2. Router directs request to appropriate handler (in `cmd/api/`)
 3. Handler extracts data from request (body, params, query)
-4. Handler calls appropriate database model method
-5. Database model executes SQL query against SQLite database
+4. Handler calls appropriate repository method (in `internal/database/`)
+5. Repository executes SQL query against SQLite database
 6. Results are returned back up the chain to the client
 
 ## Key Design Decisions
@@ -105,9 +89,9 @@ This REST API is built using Go and the Gin web framework. It follows a layered 
 
 ### Adding New Features
 1. Add new model structs in `internal/database/`
-2. Implement corresponding database operations
+2. Implement corresponding database operations (CRUD methods)
 3. Update `Models` struct in `models.go` to include new model
-4. Add handlers in `cmd/api/` or create new handler files
+4. Add handlers in `cmd/api/` (e.g., `newfeature.go`)
 5. Register new routes in `routes.go`
 
 ### Switching Databases
