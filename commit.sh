@@ -13,6 +13,7 @@ if [ "$confirm" = "y" ]; then
     git pull
     echo "pushing changes to remote..."
     git push
+    clear
 else 
     echo "Changes committed but not pushed"
 fi
