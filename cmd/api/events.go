@@ -42,12 +42,13 @@ func (app *application) getAllEvents(c *gin.Context) {
 }
 
 func (app *application) getEvent(c *gin.Context) {
+	context := c.Request.Context()
 	 id, err := strconv.Atoi(c.Param("id")); 
 	 if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	event, err := app.models.Events.Get(id)
+	event, err := app.models.Events.Get(id, context)
 
 	if event == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Event Not found"})
@@ -62,13 +63,14 @@ func (app *application) getEvent(c *gin.Context) {
 }
 
 func (app *application) updateEvent(c *gin.Context) {
+	context := c.Request.Context()
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	existingEvent, err := app.models.Events.Get(id)
+	existingEvent, err := app.models.Events.Get(id, context)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event"})

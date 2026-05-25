@@ -55,8 +55,8 @@ func (m *EventModel) GetAll() ([]*Event, error) {
 	return events, nil
 }
 
-func (m *EventModel) Get(id int) (*Event, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+func (m *EventModel) Get(id int, ctx context.Context) (*Event, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	
 	query := "SELECT * FROM WHERE id = $1"
