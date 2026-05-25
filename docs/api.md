@@ -3,47 +3,42 @@
 ## Base URL
 
 ```
-http://localhost:8080/api/v1
+http://localhost:8080
 ```
 
-## Authentication
-
-This API uses JWT (JSON Web Token) for authentication. Include the token in the Authorization header:
+## Health Check
 
 ```
-Authorization: Bearer <your_jwt_token>
+GET /ping
 ```
 
-## Response Format
-
-All API responses follow this format:
-
-### Success Response
+**Response:** `200 OK`
 
 ```json
 {
-  "success": true,
-  "data": { ... }
+  "message": "PONG"
 }
 ```
 
-### Error Response
+## API Status
+
+```
+GET /api/v1/
+```
+
+**Response:** `200 OK`
 
 ```json
 {
-  "success": false,
-  "error": {
-    "message": "Error description",
-    "code": "ERROR_CODE"
-  }
+  "message": "The api is running fine"
 }
 ```
 
-## Endpoints
+---
 
-### Authentication
+## Users
 
-#### Register a New User
+### Register a New User
 
 ```
 POST /api/v1/auth/register
@@ -59,97 +54,100 @@ POST /api/v1/auth/register
 }
 ```
 
-**Response:**
+**Validation rules:**
+- `email`: required
+- `password`: required, minimum 8 characters
+- `name`: required, minimum 2 characters
+
+**Response:** `201 Created`
 
 ```json
 {
-  "success": true,
-  "data": {
+  "id": 1,
+  "email": "user@example.com",
+  "name": "John Doe"
+}
+```
+
+### List All Users
+
+```
+GET /api/v1/users
+```
+
+**Response:** `200 OK`
+
+```json
+[
+  {
     "id": 1,
     "email": "user@example.com",
     "name": "John Doe"
   }
-}
+]
 ```
 
-### Events
+### Delete a User
 
-#### Create a New Event
+```
+DELETE /api/v1/delete/:id
+```
+
+**Response:** `204 No Content`
+
+---
+
+## Events
+
+### Create an Event
 
 ```
 POST /api/v1/events
 ```
 
-**Headers:**
-
-```
-Authorization: Bearer <your_jwt_token>
-```
-
 **Request Body:**
 
 ```json
 {
+  "ownerId": 1,
   "name": "Tech Conference 2026",
   "description": "Annual technology conference featuring latest innovations",
   "date": "2026-12-15",
-  "location": "Convention Center, New York",
-  "ownerId": 1
+  "location": "Convention Center, New York"
 }
 ```
 
-**Response:**
+**Validation rules:**
+- `ownerId`: required (integer)
+- `name`: required, minimum 3 characters
+- `description`: required, minimum 10 characters
+- `date`: required, format `YYYY-MM-DD`
+- `location`: required, minimum 3 characters
+
+**Response:** `201 Created`
 
 ```json
 {
-  "success": true,
-  "data": {
-    "id": 1,
-    "ownerId": 1,
-    "name": "Tech Conference 2026",
-    "description": "Annual technology conference featuring latest innovations",
-    "date": "2026-12-15",
-    "location": "Convention Center, New York"
-  }
+  "id": 1,
+  "ownerId": 1,
+  "name": "Tech Conference 2026",
+  "description": "Annual technology conference featuring latest innovations",
+  "date": "2026-12-15",
+  "location": "Convention Center, New York"
 }
 ```
 
-#### Get All Events
+### List All Events
 
 ```
 GET /api/v1/events
 ```
 
-**Response:**
+**Response:** `200 OK`
 
 ```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "ownerId": 1,
-      "name": "Tech Conference 2026",
-      "description": "Annual technology conference featuring latest innovations",
-      "date": "2026-12-15",
-      "location": "Convention Center, New York"
-    }
-  ]
-}
-```
-
-#### Get Event by ID
-
-```
-GET /api/v1/events/:id
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": {
+[
+  {
     "id": 1,
     "ownerId": 1,
     "name": "Tech Conference 2026",
@@ -157,124 +155,168 @@ GET /api/v1/events/:id
     "date": "2026-12-15",
     "location": "Convention Center, New York"
   }
+]
+```
+
+### Get Event by ID
+
+```
+GET /api/v1/events/:id
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": 1,
+  "ownerId": 1,
+  "name": "Tech Conference 2026",
+  "description": "Annual technology conference featuring latest innovations",
+  "date": "2026-12-15",
+  "location": "Convention Center, New York"
 }
 ```
 
-#### Update Event
+### Update an Event
 
 ```
 PUT /api/v1/events/:id
-```
-
-**Headers:**
-
-```
-Authorization: Bearer <your_jwt_token>
 ```
 
 **Request Body:**
 
 ```json
 {
+  "ownerId": 1,
   "name": "Updated Event Name",
-  "description": "Updated description",
+  "description": "Updated description text",
   "date": "2026-12-20",
-  "location": "Updated Location",
-  "ownerId": 1
+  "location": "Updated Location"
 }
 ```
 
-**Response:**
+**Response:** `200 OK`
 
 ```json
 {
-  "success": true,
-  "data": {
-    "id": 1,
-    "ownerId": 1,
-    "name": "Updated Event Name",
-    "description": "Updated description",
-    "date": "2026-12-20",
-    "location": "Updated Location"
-  }
+  "id": 1,
+  "ownerId": 1,
+  "name": "Updated Event Name",
+  "description": "Updated description text",
+  "date": "2026-12-20",
+  "location": "Updated Location"
 }
 ```
 
-#### Delete Event
+### Delete an Event
 
 ```
 DELETE /api/v1/events/:id
 ```
 
-**Headers:**
+**Response:** `204 No Content`
+
+### Delete All Events
 
 ```
-Authorization: Bearer <your_jwt_token>
+DELETE /api/v1/events
 ```
 
-**Response:**
+**Response:** `204 No Content`
+
+---
+
+## Attendees
+
+### Add Attendee to Event
+
+```
+POST /api/v1/events/:id/attendees/:userId
+```
+
+Checks that both the event and user exist, and prevents duplicate registrations.
+
+**Response:** `201 Created`
 
 ```json
 {
-  "success": true,
-  "data": {
-    "message": "Event deleted successfully"
+  "id": 1,
+  "userId": 2,
+  "eventId": 1
+}
+```
+
+### List Attendees for Event
+
+```
+GET /api/v1/events/:id/attendees
+```
+
+Returns the list of users registered as attendees for the given event.
+
+**Response:** `200 OK`
+
+```json
+[
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "email": "jane@example.com"
   }
-}
+]
 ```
 
-#### Health Check
+### Remove Attendee from Event
 
 ```
-GET /api/v1/
+DELETE /api/v1/events/:id/attendees/:userId
 ```
 
-**Response:**
+**Response:** `204 No Content`
+
+### Get Events by Attendee
+
+```
+GET /api/v1/attendees/:id/events
+```
+
+Returns all events that a specific user is attending.
+
+**Response:** `200 OK`
+
+```json
+[
+  {
+    "id": 1,
+    "ownerId": 1,
+    "name": "Tech Conference 2026",
+    "description": "Annual technology conference",
+    "date": "2026-12-15",
+    "location": "Convention Center, New York"
+  }
+]
+```
+
+---
+
+## Error Responses
+
+Errors are returned as JSON with an `error` field:
 
 ```json
 {
-  "message": "The api is running fine"
+  "error": "Error description"
 }
 ```
 
-## Error Codes
+### HTTP Status Codes
 
-| Code                 | Message               | Description                                  |
-| -------------------- | --------------------- | -------------------------------------------- |
-| VALIDATION_ERROR     | Validation failed     | Request data failed validation               |
-| AUTHENTICATION_ERROR | Authentication failed | Invalid or missing credentials               |
-| AUTHORIZATION_ERROR  | Authorization failed  | Insufficient permissions                     |
-| NOT_FOUND            | Resource not found    | Requested resource doesn't exist             |
-| INTERNAL_ERROR       | Internal server error | Unexpected server error                      |
-| CONFLICT             | Resource conflict     | Resource already exists or conflicting state |
-
-## Rate Limiting
-
-API endpoints are subject to rate limiting:
-
-- 100 requests per minute per IP address
-- Exceeding limits returns HTTP 429 (Too Many Requests)
-
-## Pagination
-
-Endpoints that return lists support pagination:
-
-- `page`: Page number (default: 1)
-- `limit`: Items per page (default: 10)
-
-Example: `/api/v1/events?page=2&limit=5`
-
-## HTTP Status Codes
-
-| Code | Description           |
-| ---- | --------------------- |
-| 200  | OK                    |
-| 201  | Created               |
-| 400  | Bad Request           |
-| 401  | Unauthorized          |
-| 403  | Forbidden             |
-| 404  | Not Found             |
-| 409  | Conflict              |
-| 422  | Unprocessable Entity  |
-| 429  | Too Many Requests     |
-| 500  | Internal Server Error |
+| Code | Description | When |
+|------|-------------|------|
+| 200 | OK | Successful GET/PUT request |
+| 201 | Created | Successful POST request |
+| 204 | No Content | Successful DELETE request |
+| 400 | Bad Request | Invalid request body or parameters |
+| 404 | Not Found | Resource doesn't exist |
+| 409 | Conflict | Attendee already registered for event |
+| 500 | Internal Server Error | Unexpected server error |
