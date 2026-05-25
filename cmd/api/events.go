@@ -195,3 +195,41 @@ func (app *application) getAttendeesForEvent(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, attendees)
 }
+
+func (app *application) deleteAttendeeFromEvent(c *gin.Context) {
+	ctx := c.Request.Context()
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event id"})
+		return
+	}
+
+	userId, err := strconv.Atoi(c.Param("userId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user id"})
+		return
+	}
+
+	err = app.models.Attendees.Delete(userId, id, ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete Attendee"})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+func (app *application) getEventsByAttendee(c *gin.Context) {
+	ctx := c.Request.Context()
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid attendee id"})
+		return
+	}
+	events, err := app.models.Attendees.GetEventsByAttendee(id, ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get events"})
+		return
+	}
+	c.JSON(http.StatusOK, events)
+}
