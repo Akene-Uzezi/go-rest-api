@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -11,6 +12,7 @@ func (app *application) getUsers(c *gin.Context) {
 	context := c.Request.Context()
 	users, err := app.models.Users.GetAll(context)
 	if err != nil {
+		fmt.Print(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error getting users"})
 		return
 	}

@@ -51,7 +51,7 @@ func (m *UserModel) GetAll(c context.Context) ([]*User, error) {
 	users := []*User{}
 	for rows.Next() {
 		var user User
-		err := rows.Scan(&user.Id, &user.Email, &user.Name)
+		err := rows.Scan(&user.Id, &user.Email, &user.Name, &user.Password)
 		if err != nil {
 			return nil, err
 		}
