@@ -64,3 +64,19 @@ func (m *UserModel) GetAll(c context.Context) ([]*User, error) {
 	return users, nil
 	
 }
+
+func (m *UserModel) Get(id int, c context.Context) (*User, error) {
+	ctx, cancel := context.WithTimeout(c, 3*time.Second)
+	defer cancel()
+
+	query := "SELECT FROM users where id = $1"
+	var user User
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(&user.Id, &user.Email, &user.Name, &user.Password)
+	if err != nil {
+		if err == sql.ErrNoRows{
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
