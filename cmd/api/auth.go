@@ -10,8 +10,8 @@ import (
 
 type registerRequest struct {
 	Email string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required, min=8"`
-	Name string `json:"name" binding:"required, min=2"`
+	Password string `json:"password" binding:"required,min=8"`
+	Name string `json:"name" binding:"required,min=2"`
 }
 
 func (app *application) registerUser(c *gin.Context) {
