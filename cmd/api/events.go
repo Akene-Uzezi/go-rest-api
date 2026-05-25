@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"rest-api-in-gin/internal/database"
 	"strconv"
@@ -111,5 +112,15 @@ func (app *application) deleteEvent(c *gin.Context) {
 		return
 	}
 
+	c.JSON(http.StatusNoContent, nil)
+}
+
+func (app *application) deleteAllEvents(c *gin.Context) {
+	context := c.Request.Context()
+	if err := app.models.Events.DeleteAll(context); err != nil {
+		fmt.Print(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error deleting events"})
+		return
+	}
 	c.JSON(http.StatusNoContent, nil)
 }

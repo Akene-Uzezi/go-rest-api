@@ -25,6 +25,7 @@ func (app *application) routes() http.Handler {
 
 		v1.POST("/auth/register", app.registerUser)
 		v1.DELETE("/delete/:id", app.deleteUser)
+		v1.DELETE("/events", app.deleteAllEvents)
 	}
 	return  g
 }

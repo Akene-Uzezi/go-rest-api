@@ -55,6 +55,17 @@ func (m *EventModel) GetAll() ([]*Event, error) {
 	return events, nil
 }
 
+func (m *EventModel) DeleteAll(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	query := "DELETE FROM events"
+	_,err := m.DB.ExecContext(ctx, query); 
+	if err != nil {
+		return  err
+	}
+	return nil
+}
+
 func (m *EventModel) Get(id int, ctx context.Context) (*Event, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
