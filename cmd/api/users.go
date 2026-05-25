@@ -7,6 +7,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func (app *application) getUsers(c *gin.Context) {
+	context := c.Request.Context()
+	users, err := app.models.Users.GetAll(context)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error getting users"})
+		return
+	}
+	c.JSON(http.StatusOK, users)
+}
+
 func (app *application) deleteUser(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

@@ -124,3 +124,51 @@ func (app *application) deleteAllEvents(c *gin.Context) {
 	}
 	c.JSON(http.StatusNoContent, nil)
 }
+
+// func (app *application) addAttendeeToEvent(c *gin.Context) {
+// 	context := c.Request.Context()
+// 	eventId, err := strconv.Atoi(c.Param("id"))
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event Id"})
+// 		return
+// 	}
+
+// 	userId, err := strconv.Atoi(c.Param("userId"))
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user Id"})
+// 		return
+// 	}
+
+// 	event, err := app.models.Events.Get(eventId, context)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event"})
+// 		return
+// 	}
+// 	if event == nil {
+// 		c.JSON(http.StatusNotFound, gin.H{"error": "event not found"})
+// 		return
+// 	}
+
+// 	userToAdd, err := app.models.Users.Get(userId, context)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve user"})
+// 		return
+// 	}
+// 	if userToAdd == nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
+// 	}
+
+// 	existingAttendee, err := app.models.Attendees.GetByEventAndAttendee(event.Id, userToAdd.Id)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve attendee"})
+// 		return
+// 	}
+// 	if existingAttendee != nil {
+// 		c.JSON(http.StatusConflict, gin.H{"error": "user is already in attendance"})
+// 		return
+// 	}
+// }
+
+func (app *application) getAttendeesForEvent(c *gin.Context) {
+
+}

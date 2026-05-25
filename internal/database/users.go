@@ -37,3 +37,30 @@ func (m *UserModel) Delete(id int, ctx context.Context) error {
 	}
 	return nil
 }
+
+func (m *UserModel) GetAll(c context.Context) ([]*User, error) {
+	ctx, cancel := context.WithTimeout(c, 3*time.Second)
+	defer cancel()
+	query := "SELECT * FROM users"
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []*User{}
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.Id, &user.Email, &user.Name)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+	
+}
