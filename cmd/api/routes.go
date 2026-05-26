@@ -17,6 +17,7 @@ func (app *application) routes() http.Handler {
 	v1 := g.Group("/api/v1")
 	{
 		v1.GET("/", app.getHome)
+		// event routes
 		v1.POST("/events", app.createEvent)
 		v1.GET("/events", app.getAllEvents)
 		v1.GET("/events/:id", app.getEvent)
@@ -24,14 +25,19 @@ func (app *application) routes() http.Handler {
 		v1.DELETE("/events/:id", app.deleteEvent)
 		v1.POST("/events/:id/attendees/:userId", app.addAttendeeToEvent)
 		v1.GET("events/:id/attendees", app.getAttendeesForEvent)
-
-
-		v1.GET("/users", app.getUsers)
-		v1.POST("/auth/register", app.registerUser)
-		v1.DELETE("/delete/:id", app.deleteUser)
 		v1.DELETE("/events", app.deleteAllEvents)
 		v1.DELETE("/events/:id/attendees/:userId", app.deleteAttendeeFromEvent)
+
+		//attendee routes
 		v1.GET("/attendees/:id/events", app.getEventsByAttendee)
+
+		// auth routes
+		v1.POST("/auth/register", app.registerUser)
+		v1.POST("/auth/login", app.login)
+
+		//user routes
+		v1.DELETE("/delete/:id", app.deleteUser)
+		v1.GET("/users", app.getUsers)
 	}
 	return  g
 }
