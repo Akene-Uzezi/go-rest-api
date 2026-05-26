@@ -196,6 +196,7 @@ func (app *application) getAttendeesForEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
 	}
 	context := c.Request.Context()
 	attendees, err := app.models.Attendees.GetAttendeesByEvent(context, id)
