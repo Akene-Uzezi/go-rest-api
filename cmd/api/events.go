@@ -71,7 +71,8 @@ func (app *application) updateEvent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-
+	
+	user := app.GetUserFromContext(c)
 	existingEvent, err := app.models.Events.Get(id, context)
 
 	if err != nil {
@@ -81,6 +82,11 @@ func (app *application) updateEvent(c *gin.Context) {
 
 	if existingEvent == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	if existingEvent.OwnerId != user.Id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to update this event"})
 		return
 	}
 
@@ -102,9 +108,31 @@ func (app *application) updateEvent(c *gin.Context) {
 }
 
 func (app *application) deleteEvent(c *gin.Context) {
+	context := c.Request.Context()
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Event Id"})
+		return
+	}
+
+	var user *database.User
+	var event *database.Event
+
+	g, ctx := errgroup.WithContext(context)
+	g.Go(func() error {
+		var err error
+		event, err = app.models.Events.Get(id, ctx)
+		return err
+	})
+
+	g.Go(func() error {
+		var err error
+		user, err = app.models.Users.Get(event.OwnerId, ctx)
+		return err
+	})
+
+	if err := g.Wait(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event"})
 		return
 	}
 
