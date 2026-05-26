@@ -80,7 +80,7 @@ func (m *AttendeeModel) Delete(userId, eventId int, c context.Context) error {
 	defer cancel()
 
 	query := "DELETE FROM attendees WHERE user_id = $1 AND event_id = $2"
-	_, err := m.DB.ExecContext(ctx, query, eventId)
+	_, err := m.DB.ExecContext(ctx, query, userId, eventId)
 	if err != nil {
 		return  err
 	}
