@@ -22,3 +22,5 @@ cmd/migrate/migrate
 data.db
 tmp/
 .kilo/
+
+data.txt
