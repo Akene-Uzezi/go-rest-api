@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/errgroup"
 )
 
 func(app *application) getHome(c *gin.Context) {
@@ -139,25 +140,34 @@ func (app *application) addAttendeeToEvent(c *gin.Context) {
 		return
 	}
 
-	event, err := app.models.Events.Get(eventId, context)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event"})
-		return
-	}
-	if event == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "event not found"})
-		return
-	}
+	var event *database.Event
+	var userToAdd *database.User
+	 g, ctx := errgroup.WithContext(context)
+	 g.Go(func() error {
+		var err error 
+		event, err = app.models.Events.Get(eventId, ctx)
+		return err
+	 })
 
-	userToAdd, err := app.models.Users.Get(userId, context)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve user"})
-		return
-	}
-	if userToAdd == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
-		return
-	}
+	 g.Go(func() error {
+        var err error
+        userToAdd, err = app.models.Users.Get(userId, ctx)
+        return err
+    })
+
+	if err := g.Wait(); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve data"})
+        return
+    }
+
+	if event == nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "event not found"})
+        return
+    }
+    if userToAdd == nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
+        return
+    }
 
 	existingAttendee, err := app.models.Attendees.GetByEventAndAttendee(event.Id, userToAdd.Id, context)
 	if err != nil {
