@@ -10,6 +10,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// @title Rest API in Gin
+// @version 1.0
+// @description This is a simple REST API in Gin.
+// @securityDefinitions.apiKey BearerAuth
+// @in header
+// @name Authorization
+// @description Enter your bearer token for in the format **Bearer &lt;token&gt
 type application struct {
 	port      int
 	jwtSecret string
