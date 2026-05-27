@@ -10,7 +10,7 @@ func (app *application) routes() http.Handler {
 	g := gin.Default()
 	g.RedirectTrailingSlash = true
 
-	g.GET("/ping", func (c *gin.Context) {
+	g.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "PONG"})
 	})
 
@@ -45,5 +45,5 @@ func (app *application) routes() http.Handler {
 		authGroup.DELETE("/events/:id/attendees/:userId", app.deleteAttendeeFromEvent)
 	}
 
-	return  g
+	return g
 }

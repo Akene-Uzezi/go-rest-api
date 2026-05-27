@@ -11,9 +11,9 @@ import (
 )
 
 type application struct {
-	port int
+	port      int
 	jwtSecret string
-	models database.Models
+	models    database.Models
 }
 
 func main() {
@@ -24,9 +24,9 @@ func main() {
 	defer db.Close()
 	models := database.NewModels(db)
 	app := &application{
-		port: env.GetEnvInt("PORT", 8080),
+		port:      env.GetEnvInt("PORT", 8080),
 		jwtSecret: env.GetEnvString("JWT_SECRET", "secret"),
-		models: models,
+		models:    models,
 	}
 
 	if err := app.serve(); err != nil {

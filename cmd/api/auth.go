@@ -12,13 +12,13 @@ import (
 )
 
 type registerRequest struct {
-	Email string `json:"email" binding:"required"`
+	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required,min=8"`
-	Name string `json:"name" binding:"required,min=2"`
+	Name     string `json:"name" binding:"required,min=2"`
 }
 
 type loginRequest struct {
-	Email string `json:"email" binding:"required,email"`
+	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8"`
 }
 
@@ -31,6 +31,7 @@ func (app *application) login(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&auth); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	existingUser, err := app.models.Users.GetByEmail(auth.Email, c.Request.Context())
@@ -51,8 +52,8 @@ func (app *application) login(c *gin.Context) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": existingUser.Id,
-		"email": existingUser.Email,
-		"expr": time.Now().Add(time.Hour * 72).Unix(),
+		"email":  existingUser.Email,
+		"exp":    time.Now().Add(time.Hour * 72).Unix(),
 	})
 
 	tokenStr, err := token.SignedString([]byte(app.jwtSecret))
@@ -78,8 +79,8 @@ func (app *application) registerUser(c *gin.Context) {
 
 	register.Password = string(hashedPassword)
 	user := database.User{
-		Email: register.Email,
-		Name: register.Name,
+		Email:    register.Email,
+		Name:     register.Name,
 		Password: register.Password,
 	}
 	context := c.Request.Context()

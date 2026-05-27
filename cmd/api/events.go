@@ -10,7 +10,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func(app *application) getHome(c *gin.Context) {
+func (app *application) getHome(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "The api is running fine"})
 }
 
@@ -32,10 +32,9 @@ func (app *application) createEvent(c *gin.Context) {
 	c.JSON(http.StatusCreated, event)
 }
 
-
 func (app *application) getAllEvents(c *gin.Context) {
 	events, err := app.models.Events.GetAll()
-	
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed To retreive events"})
 	}
@@ -45,8 +44,8 @@ func (app *application) getAllEvents(c *gin.Context) {
 
 func (app *application) getEvent(c *gin.Context) {
 	context := c.Request.Context()
-	 id, err := strconv.Atoi(c.Param("id")); 
-	 if err != nil {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
@@ -71,7 +70,7 @@ func (app *application) updateEvent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	
+
 	user := app.GetUserFromContext(c)
 	existingEvent, err := app.models.Events.Get(id, context)
 
@@ -95,13 +94,13 @@ func (app *application) updateEvent(c *gin.Context) {
 	if err := c.ShouldBindJSON(updatedEvent); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	} 
+	}
 
 	updatedEvent.Id = id
 
 	if err := app.models.Events.Update(updatedEvent); err != nil {
-		 c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update event"})
-		 return
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update event"})
+		return
 	}
 
 	c.JSON(http.StatusOK, updatedEvent)
@@ -115,25 +114,20 @@ func (app *application) deleteEvent(c *gin.Context) {
 		return
 	}
 
-	var user *database.User
-	var event *database.Event
-
-	g, ctx := errgroup.WithContext(context)
-	g.Go(func() error {
-		var err error
-		event, err = app.models.Events.Get(id, ctx)
-		return err
-	})
-
-	g.Go(func() error {
-		var err error
-		user, err = app.models.Users.Get(event.OwnerId, ctx)
-		return err
-	})
-
-	if err := g.Wait(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event"})
+	user := app.GetUserFromContext(c)
+	existingEvent, err := app.models.Events.Get(id, context)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Failed to retrieve event"})
 		return
+	}
+
+	if existingEvent == nil {
+		c.JSON(http.StatusNotFound, gin.H{"Error": "Event not found"})
+		return
+	}
+
+	if existingEvent.OwnerId != user.Id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this event"})
 	}
 
 	if err := app.models.Events.Delete(id); err != nil {
@@ -170,32 +164,32 @@ func (app *application) addAttendeeToEvent(c *gin.Context) {
 
 	var event *database.Event
 	var userToAdd *database.User
-	 g, ctx := errgroup.WithContext(context)
-	 g.Go(func() error {
-		var err error 
+	g, ctx := errgroup.WithContext(context)
+	g.Go(func() error {
+		var err error
 		event, err = app.models.Events.Get(eventId, ctx)
 		return err
-	 })
+	})
 
-	 g.Go(func() error {
-        var err error
-        userToAdd, err = app.models.Users.Get(userId, ctx)
-        return err
-    })
+	g.Go(func() error {
+		var err error
+		userToAdd, err = app.models.Users.Get(userId, ctx)
+		return err
+	})
 
 	if err := g.Wait(); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve data"})
-        return
-    }
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve data"})
+		return
+	}
 
 	if event == nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "event not found"})
-        return
-    }
-    if userToAdd == nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
-        return
-    }
+		c.JSON(http.StatusNotFound, gin.H{"error": "event not found"})
+		return
+	}
+	if userToAdd == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
+		return
+	}
 
 	existingAttendee, err := app.models.Attendees.GetByEventAndAttendee(event.Id, userToAdd.Id, context)
 	if err != nil {
@@ -209,7 +203,7 @@ func (app *application) addAttendeeToEvent(c *gin.Context) {
 
 	attendee := database.Attendee{
 		EventId: event.Id,
-		UserId: userToAdd.Id,
+		UserId:  userToAdd.Id,
 	}
 	_, err = app.models.Attendees.Insert(&attendee, context)
 	if err != nil {
